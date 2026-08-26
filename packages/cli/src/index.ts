@@ -1,12 +1,5 @@
 import { Command } from "commander";
-
-type TelegramResponse = {
-  ok: boolean;
-  result?: {
-    message_id?: number;
-  };
-  description?: string;
-};
+import { sendTelegramMessage } from "telkit-core";
 
 const program = new Command();
 
@@ -35,30 +28,19 @@ program
       process.exit(1);
     }
 
-    const url = `https://api.telegram.org/bot${token}/sendMessage`;
-    const respone = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-      }),
-    });
-
-    const data: TelegramResponse = await respone.json();
-
-    if (!respone.ok || !data.ok) {
-      const detail = data.description ?? respone.statusText;
-      console.error(`Telegram API request failed: ${detail}`);
+    try {
+      const result = await sendTelegramMessage({
+        chatId,
+        message,
+        botToken: token,
+      });
+      console.log(`Message sent successfully. Message ID: ${result.messageId}`);
+      console.log(`Chat ID: ${result.chatId}`);
+    } catch (error) {
+      const detailError =
+        error instanceof Error ? error.message : String(error);
+      console.error(`Telegram API request failed: ${detailError}`);
       process.exit(1);
-    }
-
-    const messageId = data.result?.message_id;
-    console.log(`Telegram message sent successfully to chat ID ${chatId}.`);
-    if (messageId !== undefined) {
-      console.log(`Message sent successfully! Message ID: ${messageId}`);
     }
   });
 
