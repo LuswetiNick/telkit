@@ -6,48 +6,35 @@ Telkit is being developed incrementally.
 
 This document separates:
 
-- **current architecture** — verified from the repository;
-- **near-term target architecture** — expected once CLI + local MCP share logic;
+- **current implemented architecture** — verified from the repository;
 - **future architecture** — only for later deployment phases.
 
-Agents must not treat target diagrams as proof that packages already exist.
+Agents must not treat future diagrams as proof that packages already exist.
 
 ---
 
 # 2. Current Architecture
 
-At the repository snapshot used to create this document:
+The current repository implements separate CLI, core, and local MCP packages:
 
 ```text
-Terminal
-   |
-   | CLI arguments
-   v
-packages/cli
-   |
-   | HTTPS POST
-   | Telegram bot token from environment
-   v
-Telegram Bot API
+packages/cli -------+
+                    |
+                    v
+              packages/core -----> Telegram Bot API
+                    ^
+                    |
+packages/local-mcp -+
 ```
 
-The CLI currently:
-
-- uses Commander;
-- accepts a Telegram chat ID;
-- accepts message text;
-- reads `TELEGRAM_BOT_TOKEN`;
-- calls Telegram's `sendMessage` endpoint;
-- evaluates Telegram/HTTP success;
-- prints the result.
-
-This is intentionally a small starting point.
+Both adapters read interface-specific input and configuration, then invoke the
+shared Telegram operation from `packages/core`.
 
 ---
 
-# 3. Near-Term Target Architecture
+# 3. Implemented CLI/Core/Local MCP Architecture
 
-Once local MCP exists, Telegram behavior should be shared:
+Telegram behavior is shared between the CLI and local MCP adapters:
 
 ```text
 +----------------+
@@ -80,7 +67,7 @@ Once local MCP exists, Telegram behavior should be shared:
 +----------------+
 ```
 
-Preferred workspace direction:
+Implemented workspace structure:
 
 ```text
 packages/

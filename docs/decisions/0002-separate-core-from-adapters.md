@@ -1,11 +1,11 @@
 # ADR 0002 — Separate Telegram Core Logic from Interface Adapters
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-08-26
 
 ## Context
 
-The current CLI directly contains Telegram API integration logic.
+The initial CLI directly contained Telegram API integration logic.
 
 As long as only one interface exists, this is simple.
 
@@ -21,7 +21,7 @@ That duplication would make it harder to:
 
 ## Decision
 
-When the second interface requires Telegram messaging, extract reusable Telegram behavior into a shared core package/module.
+The second interface now reuses Telegram behavior extracted into a shared core package/module.
 
 Target:
 
@@ -29,6 +29,8 @@ Target:
 cli -------> core -------> Telegram API
 local-mcp -> core -------> Telegram API
 ```
+
+This dependency structure is implemented in the current workspace.
 
 ## Core Responsibilities
 
