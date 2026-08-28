@@ -10,7 +10,7 @@ Do not skip phase gates just to add portfolio technologies.
 
 ## Phase 0 — Repository Foundation
 
-**Status: active/partially complete**
+**Status: complete**
 
 Goals:
 
@@ -32,7 +32,7 @@ Exit criteria:
 
 ## Phase 1 — Application + Local MCP Baseline
 
-**Developer-led**
+**Status: complete**
 
 Goals:
 
@@ -58,7 +58,7 @@ Do not proceed to remote MCP yet.
 
 ## Phase 2 — Engineering Foundation
 
-**Codex-assisted**
+**Status: active**
 
 Goals:
 
