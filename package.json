@@ -10,10 +10,13 @@
   "scripts": {
     "dev:cli": "bun run packages/cli/src/index.ts",
     "dev:local-mcp": "bun run packages/local-mcp/src/index.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^26.3.0",
+    "prettier": "3.9.6",
     "typescript": "7.0.2"
   }
 }

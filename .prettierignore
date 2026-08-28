@@ -1,0 +1,14 @@
+# Dependencies and generated output
+node_modules/
+dist/
+bun.lock
+
+# Local secrets and runtime configuration
+.env
+.env.*
+!.env.example
+.mcp.json
+.agents/
+.codex/
+config.toml
+*.log
