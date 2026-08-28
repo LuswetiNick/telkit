@@ -5,3 +5,8 @@ dist/
 !.env.example
 .DS_Store
 *.log
+
+
+.mcp.json
+.codex
+config.toml
