@@ -12,10 +12,13 @@
     "dev:local-mcp": "bun run packages/local-mcp/src/index.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "lint": "oxlint --deny-warnings packages",
+    "lint:fix": "oxlint --fix --deny-warnings packages",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/node": "^26.3.0",
+    "oxlint": "1.79.0",
     "prettier": "3.9.6",
     "typescript": "7.0.2"
   }
