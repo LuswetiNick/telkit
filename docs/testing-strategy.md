@@ -70,6 +70,10 @@ Ensure errors/results never contain the bot token.
 
 ## 4. CLI Tests
 
+CLI argument, environment, output, and exit behavior is tested black-box through
+fresh subprocesses. Test subprocesses use controlled environments and disable
+automatic `.env` loading so local credentials cannot affect the suite.
+
 CLI adapter tests should verify behavior such as:
 
 - required arguments;
