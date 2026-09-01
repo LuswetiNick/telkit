@@ -124,6 +124,16 @@ check
 
 Do not add documentation claiming a script exists until it actually exists.
 
+The current local pre-test quality gate is:
+
+```bash
+bun run check
+```
+
+It runs formatting verification, linting, and type checking sequentially. It
+currently excludes tests and build/package verification; how later phases
+compose those checks will be decided when they are established.
+
 ### Workspace Script Ownership
 
 Executable workspace packages own their development entrypoint commands. Root

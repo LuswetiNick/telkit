@@ -14,7 +14,8 @@
     "format:check": "prettier --check .",
     "lint": "oxlint --deny-warnings packages",
     "lint:fix": "oxlint --fix --deny-warnings packages",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check": "bun run format:check && bun run lint && bun run typecheck"
   },
   "devDependencies": {
     "@types/node": "^26.3.0",
