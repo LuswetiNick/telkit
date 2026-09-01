@@ -5,6 +5,7 @@ const botToken = "test-bot-token";
 const chatId = "123456789";
 const message = "Test message";
 const messageId = 987654321;
+const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
 function mockTelegramResponse(body, init) {
   return spyOn(globalThis, "fetch").mockResolvedValue(
@@ -19,6 +20,21 @@ function mockSuccessfulTelegramResponse() {
       message_id: messageId,
     },
   });
+}
+
+async function captureRejection(promise) {
+  return promise.then(
+    () => {
+      throw new Error("Expected operation to reject");
+    },
+    (error) => error,
+  );
+}
+
+function expectSafeError(error) {
+  expect(error).toBeInstanceOf(Error);
+  expect(error.message).not.toContain(botToken);
+  expect(error.message).not.toContain(telegramUrl);
 }
 
 afterEach(() => {
@@ -44,19 +60,16 @@ describe("sendTelegramMessage", () => {
     await sendTelegramMessage({ chatId, message, botToken });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock).toHaveBeenCalledWith(
-      `https://api.telegram.org/bot${botToken}/sendMessage`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: message,
-        }),
+    expect(fetchMock).toHaveBeenCalledWith(telegramUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+      }),
+    });
   });
 
   test("rejects a Telegram-shaped HTTP error response", async () => {
@@ -104,5 +117,47 @@ describe("sendTelegramMessage", () => {
     await expect(
       sendTelegramMessage({ chatId, message, botToken }),
     ).rejects.toThrow("Telegram message request failed");
+  });
+
+  test("normalizes network errors without exposing the request URL", async () => {
+    spyOn(globalThis, "fetch").mockRejectedValue(
+      new Error(`Network unavailable for ${telegramUrl}`),
+    );
+
+    const error = await captureRejection(
+      sendTelegramMessage({ chatId, message, botToken }),
+    );
+
+    expectSafeError(error);
+    expect(error.message).toContain("Telegram request");
+  });
+
+  test("normalizes a response that cannot be parsed as JSON", async () => {
+    spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("Bad Gateway", {
+        status: 502,
+        headers: {
+          "Content-Type": "text/html",
+        },
+      }),
+    );
+
+    const error = await captureRejection(
+      sendTelegramMessage({ chatId, message, botToken }),
+    );
+
+    expectSafeError(error);
+    expect(error.message).toContain("Telegram response");
+  });
+
+  test("normalizes structurally invalid Telegram JSON", async () => {
+    mockTelegramResponse({ unexpected: true });
+
+    const error = await captureRejection(
+      sendTelegramMessage({ chatId, message, botToken }),
+    );
+
+    expectSafeError(error);
+    expect(error.message).toContain("Telegram response");
   });
 });

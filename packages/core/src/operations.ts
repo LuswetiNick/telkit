@@ -4,6 +4,7 @@ import {
   type TelegramMessageOutput,
   telegramMessageOutputSchema,
   telegramSendMessageRequestSchema,
+  type TelegramSendMessageResponse,
   telegramSendMessageResponseSchema,
 } from "./schemas/schemas";
 
@@ -17,15 +18,25 @@ export async function sendTelegramMessage(
   });
 
   const url = `https://api.telegram.org/bot${parsedInput.botToken}/sendMessage`;
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: await Response.json(requestBody).text(),
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: await Response.json(requestBody).text(),
+    });
+  } catch {
+    throw new Error("Telegram request failed");
+  }
 
-  const data = telegramSendMessageResponseSchema.parse(await response.json());
+  let data: TelegramSendMessageResponse;
+  try {
+    data = telegramSendMessageResponseSchema.parse(await response.json());
+  } catch {
+    throw new Error("Invalid Telegram response");
+  }
 
   if (!response.ok || !data.ok || !data.result) {
     throw new Error(data.description ?? "Telegram message request failed");
