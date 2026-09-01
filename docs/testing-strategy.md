@@ -6,6 +6,9 @@ Testing should give confidence that Telkit can change safely and that CI failure
 
 Tests should be fast, deterministic, and independent of production Telegram credentials by default.
 
+Telkit uses Bun's built-in `bun:test` framework. Run the behavioral test suite
+with `bun run test`, or use `bun run test:watch` during local development.
+
 ---
 
 ## 2. Test Pyramid
