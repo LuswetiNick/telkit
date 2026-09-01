@@ -98,7 +98,11 @@ Tests should verify:
 - result is MCP-compatible;
 - no arbitrary stdout logs corrupt stdio.
 
-A higher-level smoke test can spawn the stdio server as a child process and interact with it using an MCP client.
+The local MCP adapter is tested black-box by spawning its stdio server and using
+the official MCP `Client` and `StdioClientTransport`. Each test uses a controlled
+environment with automatic `.env` loading disabled, then closes the client and
+child-process transport during cleanup. Because the SDK's stdio client transport
+is Node-only, `bun:test` launches a small Node helper for the client side.
 
 ---
 
