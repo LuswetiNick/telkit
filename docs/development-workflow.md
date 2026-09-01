@@ -124,6 +124,20 @@ check
 
 Do not add documentation claiming a script exists until it actually exists.
 
+### Workspace Script Ownership
+
+Executable workspace packages own their development entrypoint commands. Root
+scripts orchestrate those package-owned scripts through Bun workspace filters,
+so the root does not need to know package source paths. Internal adapter
+dependencies on `telkit-core` use `workspace:*` to make local workspace
+resolution explicit.
+
+These development conventions do not define the eventual npm package contract.
+Package publication boundaries, names, entrypoints, exports, build output,
+version ownership, and publishing automation remain deferred to the packaging
+phase. That phase will also resolve the existing `0.0.0` package metadata versus
+`1.0.0` CLI-reported version discrepancy.
+
 ---
 
 ## 6. Pull Request Description

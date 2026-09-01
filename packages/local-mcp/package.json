@@ -6,6 +6,9 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "scripts": {
+    "dev": "bun run src/index.ts"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
     "telkit-core": "workspace:*",

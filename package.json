@@ -8,8 +8,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:cli": "bun run packages/cli/src/index.ts",
-    "dev:local-mcp": "bun run packages/local-mcp/src/index.ts",
+    "dev:cli": "bun run --filter telkit dev",
+    "dev:local-mcp": "bun run --filter telkit-mcp dev",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "oxlint --deny-warnings packages",
