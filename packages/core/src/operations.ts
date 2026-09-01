@@ -17,7 +17,7 @@ export async function sendTelegramMessage(
   });
 
   const url = `https://api.telegram.org/bot${parsedInput.botToken}/sendMessage`;
-  const respone = await fetch(url, {
+  const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -25,9 +25,9 @@ export async function sendTelegramMessage(
     body: await Response.json(requestBody).text(),
   });
 
-  const data = telegramSendMessageResponseSchema.parse(await respone.json());
+  const data = telegramSendMessageResponseSchema.parse(await response.json());
 
-  if (!respone.ok || !data.result || !data.result) {
+  if (!response.ok || !data.ok || !data.result) {
     throw new Error(data.description ?? "Telegram message request failed");
   }
 
