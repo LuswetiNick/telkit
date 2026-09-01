@@ -58,7 +58,7 @@ Do not proceed to remote MCP yet.
 
 ## Phase 2 — Engineering Foundation
 
-**Status: active**
+**Status: complete**
 
 Goals:
 
@@ -80,6 +80,8 @@ Exit criteria:
 ---
 
 ## Phase 3 — Automated Testing
+
+**Status: active**
 
 **Codex-assisted**
 
