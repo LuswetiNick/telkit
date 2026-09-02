@@ -12,13 +12,32 @@ CI/CD is not one workflow file. It is the system that moves a change safely from
 
 ## 2. CI Phase 1 — Quality Pipeline
 
-Prerequisites:
+Current prerequisites:
 
 - local formatting command;
 - local lint command;
 - local typecheck command;
 - tests;
-- build/package command.
+- lockfile-backed frozen install.
+
+The current initial pull-request pipeline covers the established source checks
+and behavioral tests:
+
+```text
+checkout
+   ↓
+setup Node + pinned Bun
+   ↓
+install locked dependencies
+   ↓
+bun run check
+   ↓
+bun run test
+```
+
+Node is set up because the local MCP integration tests use the official SDK's
+Node-only stdio client transport. Build/package verification remains deferred
+until Telkit's npm package contract and build command are defined.
 
 Target pull-request pipeline:
 
