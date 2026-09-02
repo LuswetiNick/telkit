@@ -81,7 +81,7 @@ Exit criteria:
 
 ## Phase 3 — Automated Testing
 
-**Status: active**
+**Status: complete**
 
 **Codex-assisted**
 
@@ -107,6 +107,8 @@ Exit criteria:
 ---
 
 ## Phase 4 — Continuous Integration
+
+**Status: active**
 
 **Codex-assisted**
 
