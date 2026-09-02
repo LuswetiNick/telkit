@@ -7,11 +7,17 @@ const serverEntryPath = fileURLToPath(
 const clientHelperPath = fileURLToPath(
   new URL("./mcp-client.js", import.meta.url),
 );
+const mockCoreEntryPath = fileURLToPath(
+  new URL("./mock-core-entry.js", import.meta.url),
+);
 const testDirectory = fileURLToPath(new URL(".", import.meta.url));
 // The installed SDK's stdio client transport is Node-only.
 const nodeExecutable = Bun.which("node");
 
-async function runMcpClient(operation) {
+async function runMcpClient(
+  operation,
+  { coreOutcome, entryPath = serverEntryPath } = {},
+) {
   if (!nodeExecutable) {
     throw new Error("The MCP SDK stdio client requires Node.js");
   }
@@ -22,7 +28,8 @@ async function runMcpClient(operation) {
       clientHelperPath,
       operation,
       process.execPath,
-      serverEntryPath,
+      entryPath,
+      coreOutcome ?? "",
     ],
     {
       cwd: testDirectory,
@@ -80,5 +87,44 @@ describe("telkit local MCP stdio server", () => {
     expect(errorText).toContain("TELEGRAM_BOT_TOKEN is not defined");
     expect(errorText).not.toContain("api.telegram.org");
     expect(errorText).not.toContain("/bot");
+  });
+
+  test("maps a successful core result to an MCP tool result", async () => {
+    const result = await runMcpClient("call-telegram", {
+      coreOutcome: "success",
+      entryPath: mockCoreEntryPath,
+    });
+    const resultText = result.content
+      .filter((content) => content.type === "text")
+      .map((content) => content.text)
+      .join("\n");
+
+    expect(result.isError).not.toBe(true);
+    expect(result.structuredContent).toEqual({
+      ok: true,
+      chatId: "fake-chat-id",
+      messageId: 42,
+    });
+    expect(resultText).toContain(
+      "Sent Telegram message to chat fake-chat-id with message ID 42",
+    );
+    expect(JSON.stringify(result)).not.toContain("test-bot-token");
+    expect(JSON.stringify(result)).not.toContain("api.telegram.org");
+  });
+
+  test("maps a core failure to a safe MCP tool error", async () => {
+    const result = await runMcpClient("call-telegram", {
+      coreOutcome: "failure",
+      entryPath: mockCoreEntryPath,
+    });
+    const errorText = result.content
+      .filter((content) => content.type === "text")
+      .map((content) => content.text)
+      .join("\n");
+
+    expect(result.isError).toBe(true);
+    expect(errorText).toContain("Synthetic core failure");
+    expect(errorText).not.toContain("test-bot-token");
+    expect(errorText).not.toContain("api.telegram.org");
   });
 });

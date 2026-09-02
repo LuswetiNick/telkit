@@ -2,23 +2,34 @@ import { describe, expect, test } from "bun:test";
 import { fileURLToPath } from "node:url";
 
 const cliEntryPath = fileURLToPath(new URL("../src/index.ts", import.meta.url));
+const mockCoreEntryPath = fileURLToPath(
+  new URL("./mock-core-entry.js", import.meta.url),
+);
 const testDirectory = fileURLToPath(new URL(".", import.meta.url));
 
-async function runCli(args) {
+async function runCli(args, coreOutcome) {
+  const entryPath = coreOutcome ? mockCoreEntryPath : cliEntryPath;
+  const env = {
+    NO_COLOR: "1",
+  };
+
+  if (coreOutcome) {
+    env.TELEGRAM_BOT_TOKEN = "test-bot-token";
+    env.TELKIT_TEST_CORE_OUTCOME = coreOutcome;
+  }
+
   const child = Bun.spawn(
     [
       process.execPath,
       "run",
       "--no-env-file",
       "--no-install",
-      cliEntryPath,
+      entryPath,
       ...args,
     ],
     {
       cwd: testDirectory,
-      env: {
-        NO_COLOR: "1",
-      },
+      env,
       stdout: "pipe",
       stderr: "pipe",
     },
@@ -65,5 +76,34 @@ describe("telkit CLI", () => {
     expect(result.exitCode).not.toBe(0);
     expect(result.stderr).toContain("TELEGRAM_BOT_TOKEN is not set");
     expect(result.stdout).toBe("");
+  });
+
+  test("maps a successful core result to CLI output", async () => {
+    const result = await runCli(
+      ["telegram", "fake-chat-id", "Fake message"],
+      "success",
+    );
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain(
+      "Message sent successfully. Message ID: 42",
+    );
+    expect(result.stdout).toContain("Chat ID: fake-chat-id");
+    expect(result.stderr).toBe("");
+  });
+
+  test("maps a core failure to safe CLI error output", async () => {
+    const result = await runCli(
+      ["telegram", "fake-chat-id", "Fake message"],
+      "failure",
+    );
+
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toContain(
+      "Telegram API request failed: Synthetic core failure",
+    );
+    expect(result.stderr).not.toContain("test-bot-token");
+    expect(result.stderr).not.toContain("api.telegram.org");
   });
 });

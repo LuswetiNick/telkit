@@ -66,6 +66,9 @@ Cases:
 
 Ensure errors/results never contain the bot token.
 
+Timeout behavior remains deferred until the core has an explicit timeout
+contract to test.
+
 ---
 
 ## 4. CLI Tests

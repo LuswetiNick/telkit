@@ -2,14 +2,22 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { writeFileSync } from "node:fs";
 
-const [operation, bunExecutable, serverEntryPath] = process.argv.slice(2);
+const [operation, bunExecutable, serverEntryPath, coreOutcome] =
+  process.argv.slice(2);
+const serverEnvironment = {
+  NO_COLOR: "1",
+};
+
+if (coreOutcome) {
+  serverEnvironment.TELEGRAM_BOT_TOKEN = "test-bot-token";
+  serverEnvironment.TELKIT_TEST_CORE_OUTCOME = coreOutcome;
+}
+
 const transport = new StdioClientTransport({
   command: bunExecutable,
   args: ["run", "--no-env-file", "--no-install", serverEntryPath],
   cwd: process.cwd(),
-  env: {
-    NO_COLOR: "1",
-  },
+  env: serverEnvironment,
   stderr: "pipe",
 });
 const client = new Client({
