@@ -134,6 +134,20 @@ It runs formatting verification, linting, and type checking sequentially. It
 currently excludes tests and build/package verification; how later phases
 compose those checks will be decided when they are established.
 
+### Pull Request CI
+
+Pull requests run the same established commands on GitHub Actions after a frozen
+dependency install:
+
+```bash
+bun install --frozen-lockfile
+bun run check
+bun run test
+```
+
+The workflow does not receive Telegram credentials. Build and package validation
+will be added only after the package contract and build command are defined.
+
 ### Workspace Script Ownership
 
 Executable workspace packages own their development entrypoint commands. Root
